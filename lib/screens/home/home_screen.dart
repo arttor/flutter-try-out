@@ -1,9 +1,8 @@
-import 'package:dflow/models/User.dart';
+import 'package:dflow/screens/login/login_scoped_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:latlong/latlong.dart';
-import 'package:redux/redux.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -11,22 +10,17 @@ class HomeScreen extends StatelessWidget {
     // TODO: implement build
     return new Scaffold(
       appBar: new AppBar(
-        title: StoreConnector<AppState, String>(
-            onDidChange: (view) {
-              if (view == null)
-                Navigator.of(context).pushReplacementNamed("/login");
-            },
-            converter: (Store<AppState> store) => store.state.user?.username,
-            builder: (_, name) => new Text(name ?? "")),
+        title: ScopedModelDescendant<LoginScopedModel>(
+            builder: (context, child, model) => new Text(model.username ?? "")),
         actions: <Widget>[
-          StoreConnector<AppState, VoidCallback>(
-            converter: (s) {
-              return () => s.dispatch(LogoutAction(User(null, null)));
-            },
-            builder: (context, callback) => IconButton(
-              icon: const Icon(Icons.exit_to_app),
-              onPressed: callback,
-            ),
+          ScopedModelDescendant<LoginScopedModel>(
+            builder: (context, child, model) => IconButton(
+                  icon: const Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    model.logout();
+                    Navigator.of(context).pushReplacementNamed("/login");
+                  },
+                ),
           ),
         ],
       ),

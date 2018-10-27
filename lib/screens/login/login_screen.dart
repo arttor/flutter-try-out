@@ -1,10 +1,8 @@
 import 'dart:ui';
 
-import 'package:dflow/models/User.dart';
-import 'package:dflow/screens/login/login_view_model.dart';
+import 'package:dflow/screens/login/login_scoped_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -31,19 +29,12 @@ class LoginScreenState extends State<LoginScreen> {
           padding: new EdgeInsets.all(20.0),
           child: new Form(
             key: this.formKey,
-            child: StoreConnector<AppState, LoginViewModel>(
-              converter: (Store<AppState> store) =>
-                  LoginViewModel.create(store),
-              onDidChange: (view) {
-                if (view.username != null)
-                  Navigator.of(_ctx).pushReplacementNamed("/home");
-              },
-              builder: (BuildContext context, LoginViewModel viewModel) =>
-                  ListView(
+            child: ScopedModelDescendant<LoginScopedModel>(
+              builder: (context, child, model) => ListView(
                     children: <Widget>[
                       new TextFormField(
-                          onSaved: (val) => viewModel.username = val,
-                          initialValue: viewModel.username,
+                          onSaved: (val) => model.username = val,
+                          initialValue: model.username,
                           validator: (val) {
                             return val.length < 1 ? "Fill user" : null;
                           },
@@ -53,7 +44,7 @@ class LoginScreenState extends State<LoginScreen> {
                               hintText: 'you@example.com',
                               labelText: 'E-mail Address')),
                       new TextFormField(
-                          onSaved: (val) => viewModel.password = val,
+                          onSaved: (val) => model.password = val,
                           obscureText: true, // Use secure text for passwords.
                           decoration: new InputDecoration(
                               hintText: 'Password',
@@ -69,10 +60,11 @@ class LoginScreenState extends State<LoginScreen> {
                             final form = formKey.currentState;
                             if (form.validate()) {
                               form.save();
-                              viewModel.login();
-                            }
-                            if (viewModel.username != null) {
-                              Navigator.of(_ctx).pushReplacementNamed("/home");
+                              model.login();
+                              if (model.username != null) {
+                                Navigator.of(_ctx)
+                                    .pushReplacementNamed("/home");
+                              }
                             }
                           },
                           color: Colors.blue,
