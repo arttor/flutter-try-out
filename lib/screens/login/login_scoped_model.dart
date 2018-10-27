@@ -7,10 +7,6 @@ class LoginScopedModel extends Model {
   bool _isInit = false;
   String username;
   String password;
-  bool _isLogin = false;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
-  get() => username != null;
 
   LoginScopedModel();
 
