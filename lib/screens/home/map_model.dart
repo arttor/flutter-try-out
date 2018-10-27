@@ -11,6 +11,7 @@ class MapScopedModel extends Model {
   bool _permission;
   LatLng currLoc;
   List<LatLng> stations = [];
+  List<LatLng> route = [];
 
   static MapScopedModel of(BuildContext context) =>
       ScopedModel.of<MapScopedModel>(context);
@@ -23,6 +24,11 @@ class MapScopedModel extends Model {
       _isInit = true;
       _init();
     }
+  }
+
+  buildRoute(LatLng to){
+    route = [currLoc,to];
+    notifyListeners();
   }
 
   _init() async {

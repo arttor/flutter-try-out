@@ -13,11 +13,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-//  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-//
-//  static LatLng london = new LatLng(51.5, -0.09);
-//  static LatLng paris = new LatLng(48.8566, 2.3522);
-//  static LatLng dublin = new LatLng(53.3498, -6.2603);
 
   MapController mapController;
 
@@ -59,6 +54,16 @@ class HomeScreenState extends State<HomeScreen> {
                               'pk.eyJ1IjoibWF0dGhld3RvcnkiLCJhIjoiY2pleDU3czl6MDI3YTJ6bms5ZnA0cWF1YyJ9.8_zTUzsIjhhucc2K0n-_Fg',
                           'id': 'mapbox.streets',
                         }),
+                    new PolylineLayerOptions(
+                        polylines: model.route.isNotEmpty ? [
+                          new Polyline(
+                              points: model.route,
+                              strokeWidth: 5.0,
+                              color: Colors.red
+                          )
+                        ] : []
+
+                    ),
                     new MarkerLayerOptions(markers:
                       model.stations.map((s)=>new Marker(
                           width: 45.0,
@@ -70,7 +75,32 @@ class HomeScreenState extends State<HomeScreen> {
                               color: Colors.red,
                               iconSize: 45.0,
                               onPressed: () {
-                                print('Marker tapped');
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context)=>AlertDialog(
+                                    title:  Text('Build route here?'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              FlatButton(
+                                                  child: Text('Yes'),
+                                                  onPressed: () {
+                                                    model.buildRoute(s);
+                                                    Navigator.of(context).pop();
+                                                  }),
+                                              FlatButton(
+                                                  child: Text('No'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  })
+                                            ])
+                                      ],
+                                    ),
+                                  )
+                                );
                               },
                             ),
                           ))).followedBy(<LatLng>[model.currLoc].where((s)=>s!=null).map((s)=>new Marker(
@@ -88,7 +118,8 @@ class HomeScreenState extends State<HomeScreen> {
                             ),
                           )))).toList()
 
-                    )
+                    ),
+
                   ])),
     );
   }
